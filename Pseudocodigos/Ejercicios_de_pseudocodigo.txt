@@ -1,0 +1,73 @@
+1. Cree un pseudocódigo que le pida un precio de producto al usuario, calcule su descuento y muestre el precio final tomando en cuenta que:
+   Si el precio es menor a 100, el descuento es del 2%.
+   Si el precio es mayor o igual a 100, el descuento es del 10%.
+   Ejemplos:
+   120 → 108
+   40 → 39.2
+
+   1.Inicio
+   2.Definir precio_de_producto
+   3.Definir descuento
+   4.Definir precio_final
+   5.Mostrar "Ingrese el precio de producto"
+   6.Pedir precio_de_producto
+   7.Si (precio_de_producto < 100) entonces:
+     i.descuento = precio_de_producto * 0.02
+     Sino: 
+     i.descuento = precio_de_producto * 0.10
+     Finsi
+   8.precio_final = precio_de_producto - descuento
+   9.Mostrar "El precio del producto seria el siguiente: "
+   10.Mostrar precio_final
+   11.fin
+
+
+2. Cree un pseudocódigo que le pida un tiempo en segundos al usuario y calcule si es menor o mayor a 10 minutos. Si es menor, muestre cuantos segundos faltarían para llegar a 10 minutos. Si es mayor, muestre “Mayor”. Si es exactamente igual, muestre “Igual”.
+   Ejemplos:
+   1040 → Mayor
+   140 → 460
+   600 → Igual
+   599 → 1 
+
+   1.Inicio
+   2.Definir tiempo_en_segundos
+   3.Definir 10_minutos_en_segundos
+   4.Definir segundos_faltantes
+   5.10_minutos_en_segundos = 10*60
+   6.segundos_faltantes = 0
+   7.Mostrar 'Ingrese la cantidad de segundos"
+   8.Pedir tiempo_en_segundos
+   9.Si (tiempo_en_segundos > 10_minutos_en_segundos)entonces:
+     i. Mostrar "Es mayor a 10 minutos"
+     sino :
+     si(Tiempo_en _segundos = 10_minutos_en_segundos)
+     i. Mostrar "Es igual a 10 minutos"
+     sino (tiempo_en_segundos < 10_minutos_en_segundos)
+     i.segundos_faltantes = 10_minutos_en_segundos - tiempo_en_segundos
+     ii. Mostrar "Falta los siguientes segundos para llegar a los 10 minutos"
+     iii.Mostrar segundos_faltantes
+   10.Finsi
+   11.Fin
+     
+
+3. Cree un algoritmo que le pida un numero al usuario, y realice una suma de cada numero del 1 hasta ese número ingresado. Luego muestre el resultado de la suma.
+   5 → 15 (1 + 2 + 3 + 4 + 5)   
+   3 → 6 (1 + 2 + 3)
+   12 → 78 (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12)
+
+ 1.Inicio
+ 2.Definir Numero_del_usuario
+ 3.Definir Suma_de_los_numeros
+ 4.Definir contador
+ 5.Suma_de_los_numeros = 0
+ 6.contador = 1
+ 7.Mostrar "Ingrese un numero del 1 al 100"
+ 8.Pedir Numero_del_usuario
+ 9.Mientras (contador <= Numero_del_usuario)
+  i.Suma_de_los_numeros = Suma_de_los_numeros + contador
+  ii.contador = contador + 1
+ 10.finmientras
+ 11.Mostrar " Lista de la suma del 1 al " Numero_del_usuario 
+ 12.Mostrar Suma_de_los_numeros
+ 13.Fin
+ 

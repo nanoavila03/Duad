@@ -1,0 +1,2 @@
+#Cree un programa con un numero secreto del 1 al 10. El programa no debe cerrarse hasta que el usuario adivine el numero.
+#Debe investigar cómo generar un número aleatorio distinto cada vez que se ejecute.
