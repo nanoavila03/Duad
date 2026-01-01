@@ -1,0 +1,73 @@
+1. Cree un algoritmo como preparar una fiesta sorpresa para un amigo o familiar. Considere si la persona está en casa o no, si los invitados ya llegaron o no, qué hacer mientras esperan, y cómo finaliza la fiesta
+
+ 1. Inicio
+ 2. Escoger el lugar de la fiesta
+ 3. Comprar los accesesorios para la fiesta
+ 4. Invitar a familiares y amigos
+ 5. Si el cumpleañero
+  a. Esta en el lugar de la fiesta
+ 6. Sino, llevarse al cumpleañero
+  a. Dar tiempo mientras llegan los invitados
+ 7. Si ya estan los invitados
+  a. avisar que ya pueden llevar al cumpleañero
+ 8. Mientras no llega el cumpleañero:
+  a. Mantener las luces apagas
+  b. Sin poner musica
+ 9. LLego el festejado
+ 10. Si abre la puerta
+  a. Gritar feliz cumpleaños entre todos
+  b. Prender la luces
+  c. Poner la musica
+ 11. Bailar con los invitados
+ 12. Cantar cumpleaños
+ 13. Despedirse de los invitados
+ 14. Fin
+
+
+2. Cree un algoritmo que represente cómo prepararse para un examen importante. Debe incluir una lista de actividades (leer, repasar, practicar), condiciones como si ya entendió la materia, o si tiene dudas, y un ciclo que se repita hasta sentirse listo
+
+1. Inicio
+2. Revisar fechas de examenes
+3. Falta 15 dias para iniciar examenes
+4. Buscar que toda la materia este en el cuaderno
+5. Si la materia esta completa
+ a. Seguir con leer la materia
+6. Sino, 
+ a. Pedirle el favor algun compañero que te comparta los apuntes
+7. Leer la materia
+8. Crear apuntes de lo mas valioso y que se pueda olvidar
+10. Buscar practicas
+11. Mientras no haga los ejercicios con facilidad:
+ a.  Seguir practicando
+12. Es el dia antes del examen
+13. Repasar los apuntes y las practicas
+14. Mientras no le quede claro los apuntes y prcaticas
+ a. seguir leyendo la materia
+15. Fin
+
+
+3. Cree un algoritmo de como se prepara para ir a su viaje de diversión favorito
+
+ 1. Inicio 
+ 2. Revisar los dias en el calendario
+ 3. Si falta una semana para el paseo
+  a. Revisar el carro este en buen esatdo
+  b. Preparar articulos que necesite para el viaje
+ 4. Sino, 
+  a. Esperar a que se aproxime la fecha
+ 5. Si antes de salir a de la casa
+  a. Llevar documentos de indentidad
+  b. Revisar que este las maletas en el carro
+  c. Que quedaran las luces, cocina y televisores apagados
+ 6. Sino,
+  a. Volver a verificar
+ 7. Subirse al carro 
+ 8. Revisar el nivel de combustible
+ 9. Si esta lleno el tanque de combustible
+  a. Iniciar el paseo
+ 10. Sino, esta el tanque lleno
+  a. Ir a la gasolinera mas cercana
+ 11. Mientras el tanque este vacio:
+  a. Seguir llenando el tanque
+ 12. Con el tanque lleno iniciar viaje
+ 13. Fin    
