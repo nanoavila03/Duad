@@ -1,0 +1,58 @@
+Inicio
+    hora = 6:00
+    Sonar alarma
+    
+    Si es fin de semana entonces
+        Dormir 1 hora más
+        hora = 7:00
+    FinSi
+    
+    Levantarse de la cama
+    Ir al baño
+    Cepillarse los dientes
+    Ducharse
+    Vestirse
+    
+    Si hay tiempo antes de salir entonces
+        Preparar desayuno
+        Desayunar
+    Sino
+        Tomar desayuno rápido
+    FinSi
+    
+    Si es día laboral entonces
+        Preparar mochila
+        Revisar que tengo todo
+        Salir de casa a las 7:30
+        Ir al trabajo
+        
+        Mientras estoy en el trabajo hacer
+            Realizar tareas asignadas
+            Si es hora de almuerzo entonces
+                Tomar descanso
+                Almorzar
+            FinSi
+        FinMientras
+        
+        Salir del trabajo a las 5:00 PM
+    Sino
+        Mientras hay actividades pendientes hacer
+            Realizar actividades recreativas
+            Descansar
+        FinMientras
+    FinSi
+    
+    Regresar a casa
+    Cenar
+    
+    Mientras NO sea hora de dormir hacer
+        Si hay tareas pendientes entonces
+            Hacer tareas
+        Sino
+            Ver TV o leer
+        FinSi
+    FinMientras
+    
+    Ir a dormir a las 10:00 PM
+    
+Fin
