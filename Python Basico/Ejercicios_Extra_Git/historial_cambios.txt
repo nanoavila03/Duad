@@ -1,0 +1,20 @@
+Commit 1: 9d96cc2b64a9e7a5513b2e39ba1161731b556bd7
+Fecha: Thu Jan 1 22:10:59 2026 -0600
+Mensaje: "first commit"
+
+Qué cambió:
+- Inicialización del repositorio Lyfter
+
+Por qué:
+- Crear el proyecto y establecer el punto de partida
+
+
+Commit 2: 32c3d08ac0e91ff99a9fd3851157d13dd7057054
+Fecha: Thu Jan 1 22:15:57 2026 -0600
+Mensaje: "First commit with the past exercises"
+
+Qué cambió:
+- Agregó ejercicios previos al repositorio
+
+Por qué:
+- Consolidar trabajo anterior en un solo lugar
