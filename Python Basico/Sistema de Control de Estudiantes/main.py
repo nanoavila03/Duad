@@ -3,6 +3,7 @@ import actions
 import data
 
 def main():
+    students = []
     file_path = 'students.csv'
     students = data.load_students_from_csv(file_path)
 
@@ -18,28 +19,31 @@ def main():
                 print("Student already exists.")
 
         elif choice == '2':
-            actions.display_students(students)
+            actions.display_all_students(students)
 
         elif choice == '3':
-            name = input("Enter the name to search: ")
+            name = input("Enter the full name of the student to search: ")
             actions.search_student_by_name(students, name)
 
         elif choice == '4':
-            actions.top_three_averages(students)
+            actions.calculate_averages_and_top_subjects(students)
 
         elif choice == '5':
-            name = input("Enter the name of the student to delete: ")
+            name = input("Enter the full name of the student to delete: ")
             students = actions.delete_student_by_name(students, name)
 
         elif choice == '6':
             data.save_students_to_csv(file_path, students)
-            print(f"Students saved to {file_path}.")
+            print("CSV file created/updated successfully.")
 
         elif choice == '7':
             students = data.load_students_from_csv(file_path)
-            print(f"Students loaded from {file_path}.")
+            print("CSV file opened successfully.")
 
         elif choice == '8':
+            actions.students_disaproved(students)
+
+        elif choice == '9':
             print("Exiting the program.")
             break
 

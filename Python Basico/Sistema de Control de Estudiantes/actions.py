@@ -29,6 +29,16 @@ def validate_student_exists(students, name):
             return True
     return False
 
+def validate_student_disapproved(student, passing_grade=60):
+    failed_subjects = []
+    subjects = ['Spanish grade', 'English grade', 'Social Studies grade', 'Science grade']
+    
+    for subject in subjects:
+        if subject in student and student[subject] < passing_grade:
+            failed_subjects.append(subject)
+    
+    return failed_subjects
+
 def enter_student_info():
     while True:
         name = input("Enter full name: ")
@@ -36,11 +46,15 @@ def enter_student_info():
             break
 
     while True:
+        print("=====================================")
         section = input("Enter section (e.g., 10A): ")
+        print("=====================================")
         if validate_section(section):
             break
         else:
+            print("=====================================")
             print("Invalid section format. Please use the format like '10A'.")
+            print("=====================================")
 
     grades = {}
     subjects = ['Spanish', 'English', 'Social Studies', 'Science']
@@ -63,17 +77,23 @@ def enter_student_info():
 
 def display_students(students):
     for student in students:
+        print("=====================================")
         print(f"Name: {student['Full name']}, Section: {student['Section']}, "
                 f"Spanish: {student['Spanish grade']}, English: {student['English grade']}, "
                 f"Social Studies: {student['Social Studies grade']}, Science: {student['Science grade']}")
     if not students:
+        print("=====================================")
         print("No student records available.")
+        print("=====================================")
+
     return students
 
 
 def calculate_average_grades_top_3(students):
     if not students:
+        print("=====================================")
         print("No student records available to calculate averages.")
+        print("=====================================")
         return
 
     total_spanish = total_english = total_social_studies = total_science = 0
@@ -90,10 +110,12 @@ def calculate_average_grades_top_3(students):
     avg_social_studies = total_social_studies / num_students
     avg_science = total_science / num_students
 
+    print("=====================================")
     print(f"Average Spanish Grade: {avg_spanish:.2f}")
     print(f"Average English Grade: {avg_english:.2f}")
     print(f"Average Social Studies Grade: {avg_social_studies:.2f}")
     print(f"Average Science Grade: {avg_science:.2f}")
+    print("=====================================")
     return {
         'Spanish': avg_spanish,
         'English': avg_english,
@@ -106,15 +128,21 @@ def search_student_by_name(students, name):
     found_students = [student for student in students if name.lower() in student['Full name'].lower()]
     if found_students:
         for student in found_students:
+            print("=====================================")
             print(f"Found: Name: {student['Full name']}, Section: {student['Section']}, "
                     f"Spanish: {student['Spanish grade']}, English: {student['English grade']}, "
                     f"Social Studies: {student['Social Studies grade']}, Science: {student['Science grade']}")
+            print("=====================================")
     else:
+        print("=====================================")
         print(f"No student found with the name containing '{name}'.")
+        print("=====================================")
     return found_students
 
 def confirm_deletion(student):
+    print("=====================================")
     confirmation = input(f"Are you sure you want to delete {student['Full name']}? (yes/no): ")
+    print("=====================================")
     return confirmation.lower() == 'yes'
 
 def delete_student_by_name(students, name):
@@ -122,26 +150,37 @@ def delete_student_by_name(students, name):
         if name.lower() in student['Full name'].lower():
             if confirm_deletion(student):
                 del students[i]
+                print("=====================================")
                 print(f"Student {student['Full name']} deleted.")
+                print("=====================================")
                 return students
             else:
+                print("=====================================")
                 print("Deletion cancelled.")
+                print("=====================================")
                 return students
+    print("=====================================")
     print(f"No student found with the name containing '{name}'.")
+    print("=====================================")
     return students
 
 def update_student_info(students, name):
     for student in students:
         if name.lower() in student['Full name'].lower():
+            print("=====================================")
             print(f"Updating information for {student['Full name']}:")
             student['Section'] = input(f"Enter new section (current: {student['Section']}): ") or student['Section']
             student['Spanish grade'] = input(f"Enter new Spanish grade (current: {student['Spanish grade']}): ") or student['Spanish grade']
             student['English grade'] = input(f"Enter new English grade (current: {student['English grade']}): ") or student['English grade']
             student['Social Studies grade'] = input(f"Enter new Social Studies grade (current: {student['Social Studies grade']}): ") or student['Social Studies grade']
             student['Science grade'] = input(f"Enter new Science grade (current: {student['Science grade']}): ") or student['Science grade']
+            print()
             print("Student information updated.")
+            print("=====================================")
             return students
+    print("=====================================")    
     print(f"No student found with the name containing '{name}'.")
+    print("=====================================")
     return students
 
 def top_three_averages(students):
@@ -150,7 +189,34 @@ def top_three_averages(students):
         sorted_averages = sorted(averages.items(), key=lambda item: item[1], reverse=True)
         print("Top three subjects with highest average grades:")
         for subject, avg in sorted_averages[:3]:
+            print("=====================================")
             print(f"{subject}: {avg:.2f}")
+            print()
 
-    
-  
+def students_disaproved(students, passing_grade=60):
+    disapproved_students = []
+    for student in students:
+        failed_subjects = validate_student_disapproved(student, passing_grade)
+        if failed_subjects:
+            disapproved_students.append((student, failed_subjects))
+
+    if disapproved_students:
+        for student, subjects in disapproved_students:
+            print("=====================================")
+            # Agregar " grade" si no lo tiene
+            failed_info = []
+            for subject in subjects:
+                # Verificar si necesita agregar " grade"
+                subject_key = subject if subject in student else f"{subject} grade"
+                if subject_key in student:
+                    failed_info.append(f"{subject} ({student[subject_key]})")
+                else:
+                    failed_info.append(f"{subject} (N/A)")
+            
+            print(f"Student: {student['Full name']} {student['Section']} failed in: {', '.join(failed_info)}")
+            print("=====================================")
+    else:
+        print("=====================================")
+        print("No students have failed.")
+        print("=====================================")
+    return disapproved_students

@@ -1,10 +1,13 @@
 import csv
-import actions
+import os
 
 def load_students_from_csv(file_path):
     students = []
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(script_dir, file_path)
+    
     try:
-        with open(file_path, mode='r', newline='', encoding='utf-8') as csvfile:
+        with open(full_path, mode='r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 student = {
@@ -16,16 +19,20 @@ def load_students_from_csv(file_path):
                     'Science grade': float(row['Science grade'])
                 }
                 students.append(student)
+        print(f"✓ File loaded from: {full_path}")
     except FileNotFoundError:
         print(f"File {file_path} not found. Starting with an empty student list.")
     return students
 
 def save_students_to_csv(file_path, students):
-    with open (file_path, mode='w', newline='', encoding='utf-8') as csvfile:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(script_dir, file_path)
+    
+    with open(full_path, mode='w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['Full name', 'Section', 'Spanish grade', 'English grade', 'Social Studies grade', 'Science grade']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for student in students:
-            writer.writerow(student)    
-
-
+            writer.writerow(student)
+    
+    print(f"File saved at: {full_path}")
