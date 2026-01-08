@@ -76,52 +76,20 @@ def enter_student_info():
     return student
 
 def display_students(students):
+    if not students:
+        print("=====================================")
+        print("No student records available.")
+        print("=====================================")
+        return students
+    
     for student in students:
         print("=====================================")
         print(f"Name: {student['Full name']}, Section: {student['Section']}, "
                 f"Spanish: {student['Spanish grade']}, English: {student['English grade']}, "
                 f"Social Studies: {student['Social Studies grade']}, Science: {student['Science grade']}")
-    if not students:
-        print("=====================================")
-        print("No student records available.")
-        print("=====================================")
-
+    
+    print("=====================================")
     return students
-
-
-def calculate_average_grades_top_3(students):
-    if not students:
-        print("=====================================")
-        print("No student records available to calculate averages.")
-        print("=====================================")
-        return
-
-    total_spanish = total_english = total_social_studies = total_science = 0
-    num_students = len(students)
-
-    for student in students:
-        total_spanish += float(student['Spanish grade'])
-        total_english += float(student['English grade'])
-        total_social_studies += float(student['Social Studies grade'])
-        total_science += float(student['Science grade'])
-
-    avg_spanish = total_spanish / num_students
-    avg_english = total_english / num_students
-    avg_social_studies = total_social_studies / num_students
-    avg_science = total_science / num_students
-
-    print("=====================================")
-    print(f"Average Spanish Grade: {avg_spanish:.2f}")
-    print(f"Average English Grade: {avg_english:.2f}")
-    print(f"Average Social Studies Grade: {avg_social_studies:.2f}")
-    print(f"Average Science Grade: {avg_science:.2f}")
-    print("=====================================")
-    return {
-        'Spanish': avg_spanish,
-        'English': avg_english,
-        'Social Studies': avg_social_studies,
-        'Science': avg_science
-    }
 
 
 def search_student_by_name(students, name):
@@ -169,29 +137,36 @@ def update_student_info(students, name):
         if name.lower() in student['Full name'].lower():
             print("=====================================")
             print(f"Updating information for {student['Full name']}:")
-            student['Section'] = input(f"Enter new section (current: {student['Section']}): ") or student['Section']
-            student['Spanish grade'] = input(f"Enter new Spanish grade (current: {student['Spanish grade']}): ") or student['Spanish grade']
-            student['English grade'] = input(f"Enter new English grade (current: {student['English grade']}): ") or student['English grade']
-            student['Social Studies grade'] = input(f"Enter new Social Studies grade (current: {student['Social Studies grade']}): ") or student['Social Studies grade']
-            student['Science grade'] = input(f"Enter new Science grade (current: {student['Science grade']}): ") or student['Science grade']
-            print()
+            
+            while True:
+                new_section = input(f"Enter new section (current: {student['Section']}, press Enter to keep): ")
+                if not new_section:
+                    break
+                if validate_section(new_section):
+                    student['Section'] = new_section
+                    break
+                else:
+                    print("Invalid section format. Please use the format like '10A'.")
+            
+            subjects = ['Spanish', 'English', 'Social Studies', 'Science']
+            for subject in subjects:
+                grade_key = f'{subject} grade'
+                while True:
+                    new_grade = input(f"Enter new {subject} grade (current: {student[grade_key]}, press Enter to keep): ")
+                    if not new_grade:
+                        break
+                    if validate_grade(new_grade):
+                        student[grade_key] = float(new_grade)
+                        break
+            
             print("Student information updated.")
             print("=====================================")
             return students
+    
     print("=====================================")    
     print(f"No student found with the name containing '{name}'.")
     print("=====================================")
     return students
-
-def top_three_averages(students):
-    averages = calculate_average_grades_top_3(students)
-    if averages:
-        sorted_averages = sorted(averages.items(), key=lambda item: item[1], reverse=True)
-        print("Top three subjects with highest average grades:")
-        for subject, avg in sorted_averages[:3]:
-            print("=====================================")
-            print(f"{subject}: {avg:.2f}")
-            print()
 
 def students_disaproved(students, passing_grade=60):
     disapproved_students = []
@@ -201,22 +176,71 @@ def students_disaproved(students, passing_grade=60):
             disapproved_students.append((student, failed_subjects))
 
     if disapproved_students:
+        print("=====================================")
+        print("Students who failed:")
+        print("=====================================")
         for student, subjects in disapproved_students:
-            print("=====================================")
-            # Agregar " grade" si no lo tiene
-            failed_info = []
-            for subject in subjects:
-                # Verificar si necesita agregar " grade"
-                subject_key = subject if subject in student else f"{subject} grade"
-                if subject_key in student:
-                    failed_info.append(f"{subject} ({student[subject_key]})")
-                else:
-                    failed_info.append(f"{subject} (N/A)")
-            
-            print(f"Student: {student['Full name']} {student['Section']} failed in: {', '.join(failed_info)}")
-            print("=====================================")
+            failed_info = [f"{subj.replace(' grade', '')} ({student[subj]:.1f})" for subj in subjects]
+            print(f"Student: {student['Full name']} - Section: {student['Section']}")
+            print(f"Failed subjects: {', '.join(failed_info)}")
+            print("-------------------------------------")
+        print("=====================================")
     else:
         print("=====================================")
         print("No students have failed.")
         print("=====================================")
     return disapproved_students
+
+def calculate_averages_per_student(student):
+    subjects = ['Spanish grade', 'English grade', 'Social Studies grade', 'Science grade']
+    
+    sum_grades = 0
+    
+    for subject in subjects:
+        sum_grades += student[subject]
+    
+    average = sum_grades / len(subjects)
+    
+    return average
+
+def top_three_averages(students):
+    if not students:
+        print("=====================================")
+        print("No student records available to calculate averages.")
+        print("=====================================")
+        return []
+
+    averages = []
+    for student in students:
+        avg = calculate_averages_per_student(student)
+        averages.append((student['Full name'], avg))
+
+    averages.sort(key=lambda x: x[1], reverse=True)
+    top_three = averages[:3]
+
+    print("=====================================")
+    print("Top 3 Students by Average Grades:")
+    print("=====================================")
+    for i, (name, avg) in enumerate(top_three, 1):
+        print(f"{i}. {name} - Average Grade: {avg:.2f}")
+    print("=====================================")
+    return top_three
+
+def show_overall_average(students):
+    if not students:
+        print("=====================================")
+        print("No student records available to calculate average.")
+        print("=====================================")
+        return None
+    total_sum = 0
+
+    for student in students:
+        student_avg = calculate_averages_per_student(student)
+        total_sum += student_avg
+    overall_average = total_sum / len(students)
+    print("=====================================")
+    print(f"Total number of students: {len(students)}")
+    print(f"Overall class average: {overall_average:.2f}")
+    print("=====================================")
+    
+    return overall_average
