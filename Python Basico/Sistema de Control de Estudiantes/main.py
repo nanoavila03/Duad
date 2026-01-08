@@ -43,7 +43,6 @@ def main():
     print("STUDENT CONTROL SYSTEM")
     print("="*50)
     
-    # Initial file selection
     file_path, students = select_csv_file()
 
     while True:
@@ -79,11 +78,9 @@ def main():
             print("\n" + "="*50)
             print("SWITCHING CSV FILE")
             print("="*50)
-            # Automatically save current file before switching
             data.save_students_to_csv(file_path, students)
             print("Current file saved automatically.")
             
-            # Select new file
             file_path, students = select_csv_file()
 
         elif choice == '8':
