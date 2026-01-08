@@ -1,4 +1,4 @@
-import menu 
+import menu
 import actions
 import data
 
