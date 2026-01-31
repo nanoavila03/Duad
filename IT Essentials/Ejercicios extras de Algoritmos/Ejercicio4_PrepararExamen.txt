@@ -1,0 +1,59 @@
+Algoritmo PrepararseParaExamen
+
+Inicio
+    Definir fecha del examen
+    Crear lista de temas a estudiar
+    materiasComprendidas = 0
+    totalMaterias = 10
+    estoyListo = Falso
+    
+    Mientras NO estoyListo hacer
+        Elegir un tema de la lista
+        
+        Leer el material del tema
+        Hacer resumen del tema
+        
+        Si entendí el tema entonces
+            Marcar tema como comprendido
+            materiasComprendidas = materiasComprendidas + 1
+        Sino
+            Si tengo dudas entonces
+                Buscar explicaciones adicionales
+                Ver videos tutoriales
+                Preguntar al profesor o compañeros
+                Repasar nuevamente
+            FinSi
+        FinSi
+        
+        Practicar con ejercicios
+        
+        Si respondí correctamente los ejercicios entonces
+            Pasar al siguiente tema
+        Sino
+            Repasar el tema nuevamente
+        FinSi
+        
+        Si materiasComprendidas == totalMaterias entonces
+            Hacer examen de práctica completo
+            
+            Si obtuve buena calificación en práctica entonces
+                estoyListo = Verdadero
+            Sino
+                Identificar temas débiles
+                Repasar temas débiles
+            FinSi
+        FinSi
+        
+        Si es muy tarde entonces
+            Descansar y dormir bien
+            Continuar mañana
+        FinSi
+    FinMientras
+    
+    Día del examen:
+        Desayunar bien
+        Llegar temprano
+        Relajarse y confiar en mi preparación
+        Presentar el examen
+    
+Fin

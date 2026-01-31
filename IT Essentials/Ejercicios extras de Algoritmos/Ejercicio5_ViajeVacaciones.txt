@@ -1,0 +1,75 @@
+Algoritmo PrepararViajeVacaciones
+
+Inicio
+    Definir destino del viaje
+    Definir fecha de salida y regreso
+    Definir presupuesto disponible
+    
+    Reservar boletos de avión/bus
+    Reservar hotel o alojamiento
+    
+    Crear lista de cosas por empacar:
+        - Ropa
+        - Artículos de aseo
+        - Documentos
+        - Dinero/tarjetas
+        - Medicamentos
+        - Cargadores
+        - Cámara
+    
+    Mientras falten días para el viaje hacer
+        Si faltan más de 7 días entonces
+            Investigar lugares turísticos
+            Hacer lista de actividades
+            Verificar clima del destino
+        FinSi
+        
+        Si faltan 3 días entonces
+            Comenzar a empacar maleta
+            Mientras haya items en la lista hacer
+                Tomar item de la lista
+                Colocar en la maleta
+                Marcar como empacado
+            FinMientras
+        FinSi
+        
+        Si es 1 día antes entonces
+            Verificar que tengo todo
+            Si falta algo entonces
+                Comprar lo que falta
+            FinSi
+            Imprimir boletos y reservaciones
+            Cargar todos los dispositivos
+            Dormir temprano
+        FinSi
+    FinMientras
+    
+    Día del viaje:
+        Despertar temprano
+        Desayunar
+        Verificar documentos (pasaporte, ID, boletos)
+        
+        Si tengo mascota entonces
+            Dejarla con familiar o pensión
+        FinSi
+        
+        Si tengo plantas entonces
+            Pedir a alguien que las cuide
+        FinSi
+        
+        Cerrar puertas y ventanas
+        Apagar luces y electrodomésticos
+        Llamar taxi/Uber
+        Ir al aeropuerto/terminal
+        
+        Mientras esté de viaje hacer
+            Disfrutar
+            Tomar fotos
+            Probar comida local
+            Conocer lugares nuevos
+            Descansar
+        FinMientras
+        
+    Regresar a casa feliz con muchos recuerdos
+    
+Fin

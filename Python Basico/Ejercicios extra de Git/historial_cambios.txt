@@ -1,0 +1,21 @@
+HISTORIAL DE CAMBIOS - REPOSITORIO LYFTER
+
+===========================================
+Commit: 0dfc7b151dd89ac3bdf6810090566bf494aa29a9
+Fecha: 4 de enero de 2026, 16:21:51
+Mensaje: "agregando"
+
+Qué cambió: Se agregaron archivos o funcionalidades nuevas al proyecto.
+
+Por qué: Para incorporar nuevos elementos al repositorio.
+
+===========================================
+Commit: 0b8e096fa69ea9b89acff2a94be53922f3c7655d
+Fecha: 4 de enero de 2026, 16:16:36
+Tipo: MERGE
+
+Qué cambió: Se fusionaron dos ramas del proyecto (ea14bea + 2de8467).
+
+Por qué: Para integrar trabajo desarrollado en paralelo y consolidar cambios.
+
+===========================================
