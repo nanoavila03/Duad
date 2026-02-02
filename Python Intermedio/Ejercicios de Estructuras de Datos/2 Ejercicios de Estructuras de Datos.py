@@ -55,12 +55,14 @@ class Deque:
         return removed_value
 
     def print_deque(self):
+        print("Deque contents: ", end="")  
         current = self.front
-        elements = []
         while current:
-            elements.append(current.value)
+            print(current.value, end="") 
+            if current.next:
+                print(", ", end="") 
             current = current.next
-        print("Deque contents:", elements)
+        print() 
 
 deque = Deque()
 deque.push_left(10)
