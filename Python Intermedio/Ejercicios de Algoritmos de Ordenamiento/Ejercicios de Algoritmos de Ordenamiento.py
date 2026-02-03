@@ -1,6 +1,4 @@
 #Crea un bubble_sort por tu cuenta sin revisar el código de la lección.
-from typing import List
-
 
 def bubble_sort(arr):
     n = len(arr)
@@ -21,7 +19,7 @@ def bubble_sort_descending(arr):
     return arr
 
 def main():
-    List = [64, 34, 25, 12, 22, 11, 90]  # ← Esta línea necesitaba estar indentada
+    List = [64, 34, 25, 12, 22, 11, 90]  
     print("Original list:", List)
     sorted_list = bubble_sort(List.copy())
     print("Sorted list (ascending):", sorted_list)
