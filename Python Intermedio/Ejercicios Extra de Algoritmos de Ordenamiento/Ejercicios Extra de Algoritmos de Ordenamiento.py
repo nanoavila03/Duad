@@ -1,4 +1,4 @@
-#1.Implemente un bubble_sort que funcione para https://www.notion.so/lyfterteam/Estructuras-de-Datos-6ae64bc346eb4b2bb5dfa54050d180c5?source=copy_link#1ba35bda574780898cc6dd5bbb618fe5
+#1.Implemente un bubble_sort que funcione para
 #La lógica es la misma. Solo que intercambiar los elementos lleva su propio proceso
 #2.Conteo de pasos (bubble_sort_steps)
 #Modifique su implementación de bubble_sort para que:
@@ -148,4 +148,3 @@ print(f"Swaps: {swaps}")
 empty_list = LinkedList(None)
 print("\n\nEmpty list validation:")
 print(validate_and_sort(empty_list))
-
