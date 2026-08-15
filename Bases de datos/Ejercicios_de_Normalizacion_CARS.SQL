@@ -1,112 +1,110 @@
 -- =====================================================================
--- NORMALIZACIÓN: CARS
+-- NORMALIZACIÓN: CARS (v2 — refinamiento adicional)
 -- =====================================================================
 --
--- ESTADO INICIAL (tabla sin normalizar)
---
--- VIN            Make      Model   Year  Color   Owner ID  Owner Name  Owner Phone     Insurance Company  Insurance Policy
--- 1HGCM82633A    Honda     Accord  2003  Silver  101       Alice       123-456-7890    ABC Insurance      Fire & Theft
--- 1HGCM82633A    Honda     Accord  2003  Silver  102       Bob         987-654-3210    XYZ Insurance      Full Cover
--- 5J6RM4H79EL    Honda     CR-V    2014  Blue    103       Claire      555-123-4567    DEF Insurance      Collision
--- 1G1RA6EH1FU    Chevrolet Volt    2015  Red     104       Dave        111-222-3333    GHI Insurance      Basic Legal
---
--- ¿Por qué no cumple ninguna Forma Normal?
---   - VIN se repite (1HGCM82633A aparece dos veces), así que por sí
---     solo no es una llave primaria válida.
---   - Hay grupos repetidos: los datos del vehículo (Make, Model, Year,
---     Color) se repiten en cada fila donde aparece el mismo VIN,
---     aunque el vehículo es el mismo objeto físico.
---   - No hay una sola columna que identifique de forma única cada fila.
+-- Este archivo parte del esquema en 3FN de la primera entrega
+-- (VEHICLES, OWNERS, VEHICLE_OWNERS) y resuelve dos dependencias
+-- transitivas adicionales identificadas en la revisión:
 --
 -- ---------------------------------------------------------------------
--- PASO 1 — Primera Forma Normal (1FN)
+-- PROBLEMA 1 — MAKE, MODEL, YEAR en VEHICLES
 -- ---------------------------------------------------------------------
--- Se define la llave compuesta (VIN, Owner ID), ya que la combinación
--- vehículo-dueño sí identifica de forma única cada fila (un mismo VIN
--- puede tener más de un Owner ID asociado, pero la pareja nunca se
--- repite).
+-- En el esquema anterior:
 --
--- CREATE TABLE CARS_1NF (
---     VIN VARCHAR(17) NOT NULL,
+-- CREATE TABLE VEHICLES (
+--     VIN VARCHAR(17) PRIMARY KEY,
 --     MAKE VARCHAR(50) NOT NULL,
 --     MODEL VARCHAR(50) NOT NULL,
 --     YEAR INT NOT NULL,
---     COLOR VARCHAR(30),
---     OWNER_ID INTEGER NOT NULL,
---     OWNER_NAME VARCHAR(100) NOT NULL,
---     OWNER_PHONE VARCHAR(20) NOT NULL,
---     INSURANCE_COMPANY VARCHAR(100),
---     INSURANCE_POLICY VARCHAR(100),
---     PRIMARY KEY (VIN, OWNER_ID)
+--     COLOR VARCHAR(30)
 -- );
 --
--- Válida en 1FN, pero con redundancia: los datos del Honda Accord
--- (Make, Model, Year, Color) se repiten en las dos filas donde
--- aparece su VIN.
+-- MAKE, MODEL y YEAR no son atributos que dependan del VIN individual;
+-- dependen del MODELO de vehículo (ej: "Honda Accord 2003"). Cada VIN
+-- distinto que corresponda a un Honda Accord 2003 repetiría los mismos
+-- tres valores. Con cientos de vehículos del mismo modelo, esa
+-- información se duplicaría cientos de veces, y una corrección (por
+-- ejemplo, un error de tipeo en "Accord") habría que aplicarla en
+-- cada fila en vez de en un solo lugar. Esto es una dependencia
+-- transitiva: VIN -> MODEL_ID -> (Make, Model, Year).
+--
+-- Solución: se extrae el modelo a su propia tabla, y VEHICLES solo
+-- guarda una referencia (MODEL_ID) más lo que sí es propio de cada
+-- vehículo físico individual (COLOR).
+--
+-- CREATE TABLE MODELS (
+--     MODEL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+--     MAKE VARCHAR(50) NOT NULL,
+--     MODEL VARCHAR(50) NOT NULL,
+--     YEAR INT NOT NULL,
+--     UNIQUE (MAKE, MODEL, YEAR)
+-- );
+--
+-- CREATE TABLE VEHICLES (
+--     VIN VARCHAR(17) PRIMARY KEY,
+--     MODEL_ID INTEGER NOT NULL,
+--     COLOR VARCHAR(30),
+--     FOREIGN KEY (MODEL_ID) REFERENCES MODELS(MODEL_ID)
+-- );
+--
+-- ¿Por qué COLOR se queda en VEHICLES y no se va a MODELS? Porque el
+-- color es una característica del vehículo físico específico (dos
+-- Honda Accord 2003 pueden ser de colores distintos), mientras que
+-- Make/Model/Year son características del modelo en sí, compartidas
+-- por todos los vehículos de esa línea.
 --
 -- ---------------------------------------------------------------------
--- PASO 2 — Segunda Forma Normal (2FN)
+-- PROBLEMA 2 — INSURANCE_COMPANY / INSURANCE_POLICY en VEHICLE_OWNERS
 -- ---------------------------------------------------------------------
--- Se analiza de qué parte de la llave (VIN, Owner ID) depende cada
--- columna:
+-- En el esquema anterior, INSURANCE_COMPANY e INSURANCE_POLICY vivían
+-- como texto plano dentro de VEHICLE_OWNERS. Si varias combinaciones
+-- vehículo-dueño comparten la misma aseguradora (por ejemplo, "ABC
+-- Insurance" asegura a muchos dueños distintos), el nombre de la
+-- compañía se repetiría en cada fila, con el mismo riesgo de
+-- inconsistencia (ej: "ABC Insurance" escrito de forma distinta en
+-- otra fila) y de actualización en cascada si la aseguradora cambia
+-- de nombre.
 --
---   Make, Model, Year, Color        -> depende solo de VIN
---                                       (características físicas del
---                                       vehículo; no cambian según el
---                                       dueño)
---   Owner Name, Owner Phone         -> depende solo de Owner ID
---                                       (datos de la persona; no
---                                       cambian según el vehículo)
---   Insurance Company, Insurance
---   Policy                          -> depende de VIN + Owner ID
---                                       (llave completa): la póliza
---                                       depende de la combinación
---                                       específica, ya que el mismo
---                                       Accord tiene aseguradoras
---                                       distintas según el dueño
---                                       (Alice vs. Bob)
+-- Se identifican dos entidades independientes:
+--   - La ASEGURADORA (compañía) — existe independientemente de
+--     cualquier póliza específica.
+--   - La PÓLIZA — pertenece a una aseguradora y tiene un tipo de
+--     cobertura (Fire & Theft, Full Cover, etc.). Una póliza
+--     específica es la que se asocia a la combinación vehículo-dueño.
 --
--- Se separan las columnas que dependen de una sola parte de la llave
--- en tablas propias: VEHICLES (por VIN), OWNERS (por Owner ID), y
--- una tabla de relación para lo que depende de la llave completa.
+-- CREATE TABLE INSURANCE_COMPANIES (
+--     COMPANY_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+--     COMPANY_NAME VARCHAR(100) UNIQUE NOT NULL
+-- );
 --
--- ---------------------------------------------------------------------
--- PASO 3 — Tercera Forma Normal (3FN)
--- ---------------------------------------------------------------------
--- Se revisa si queda alguna dependencia transitiva:
---   - VEHICLES: Make, Model, Year, Color dependen directamente de VIN.
---     Sin dependencia transitiva. OK en 3FN.
---   - OWNERS: Owner Name, Owner Phone dependen directamente de
---     Owner ID. Sin dependencia transitiva. OK en 3FN.
---   - VEHICLE_OWNERS: Insurance Company e Insurance Policy dependen
---     de la llave completa (VIN, Owner ID), no de ningún otro
---     atributo no-llave. OK en 3FN.
+-- CREATE TABLE POLICIES (
+--     POLICY_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+--     COMPANY_ID INTEGER NOT NULL,
+--     POLICY_TYPE VARCHAR(100) NOT NULL,
+--     FOREIGN KEY (COMPANY_ID) REFERENCES INSURANCE_COMPANIES(COMPANY_ID)
+-- );
 --
--- ¿De quién depende el seguro? Este es el punto clave: el seguro no
--- pertenece solo al vehículo (el mismo Accord tiene dos pólizas según
--- el dueño) ni solo al dueño (un dueño podría asegurar vehículos
--- distintos con aseguradoras distintas). Depende de la combinación
--- específica vehículo-dueño, por lo que su lugar correcto es la tabla
--- de relación VEHICLE_OWNERS.
---
--- Extensión adicional (historial): dado que el Accord tiene dos
--- dueños (Alice y Bob), se agregan a VEHICLE_OWNERS las columnas
--- OWNERSHIP_START y OWNERSHIP_END para distinguir el dueño histórico
--- del dueño actual (OWNERSHIP_END IS NULL = dueño vigente). Esto no
--- es parte estricta de la normalización, sino una decisión de
--- modelado para reflejar que la propiedad de un vehículo cambia en
--- el tiempo.
+-- VEHICLE_OWNERS ya no guarda el texto de la aseguradora ni de la
+-- póliza directamente: en su lugar referencia POLICY_ID, y a través
+-- de esa póliza se llega a la aseguradora (POLICY_ID -> COMPANY_ID).
 --
 -- =====================================================================
--- ESQUEMA FINAL (3FN)
+-- ESQUEMA FINAL (refinado)
 -- =====================================================================
 
-CREATE TABLE VEHICLES (
-    VIN VARCHAR(17) PRIMARY KEY,
+CREATE TABLE MODELS (
+    MODEL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     MAKE VARCHAR(50) NOT NULL,
     MODEL VARCHAR(50) NOT NULL,
     YEAR INT NOT NULL,
-    COLOR VARCHAR(30)
+    UNIQUE (MAKE, MODEL, YEAR)
+);
+
+CREATE TABLE VEHICLES (
+    VIN VARCHAR(17) PRIMARY KEY,
+    MODEL_ID INTEGER NOT NULL,
+    COLOR VARCHAR(30),
+    FOREIGN KEY (MODEL_ID) REFERENCES MODELS(MODEL_ID)
 );
 
 CREATE TABLE OWNERS (
@@ -115,47 +113,76 @@ CREATE TABLE OWNERS (
     OWNER_PHONE VARCHAR(20) NOT NULL
 );
 
+CREATE TABLE INSURANCE_COMPANIES (
+    COMPANY_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    COMPANY_NAME VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE POLICIES (
+    POLICY_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    COMPANY_ID INTEGER NOT NULL,
+    POLICY_TYPE VARCHAR(100) NOT NULL,
+    FOREIGN KEY (COMPANY_ID) REFERENCES INSURANCE_COMPANIES(COMPANY_ID)
+);
+
 CREATE TABLE VEHICLE_OWNERS (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     VIN VARCHAR(17) NOT NULL,
     OWNER_ID INTEGER NOT NULL,
-    INSURANCE_COMPANY VARCHAR(100),
-    INSURANCE_POLICY VARCHAR(100),
+    POLICY_ID INTEGER,
     OWNERSHIP_START DATE,
     OWNERSHIP_END DATE,  -- NULL si es el dueño actual
     FOREIGN KEY (VIN) REFERENCES VEHICLES(VIN),
-    FOREIGN KEY (OWNER_ID) REFERENCES OWNERS(OWNER_ID)
+    FOREIGN KEY (OWNER_ID) REFERENCES OWNERS(OWNER_ID),
+    FOREIGN KEY (POLICY_ID) REFERENCES POLICIES(POLICY_ID)
 );
 
 -- =====================================================================
 -- DATOS
 -- =====================================================================
 
-INSERT INTO VEHICLES (VIN, MAKE, MODEL, YEAR, COLOR) VALUES ('1HGCM82633A', 'Honda', 'Accord', 2003, 'Silver');
-INSERT INTO VEHICLES (VIN, MAKE, MODEL, YEAR, COLOR) VALUES ('5J6RM4H79EL', 'Honda', 'CR-V', 2014, 'Blue');
-INSERT INTO VEHICLES (VIN, MAKE, MODEL, YEAR, COLOR) VALUES ('1G1RA6EH1FU', 'Chevrolet', 'Volt', 2015, 'Red');
+INSERT INTO MODELS (MODEL_ID, MAKE, MODEL, YEAR) VALUES (1, 'Honda', 'Accord', 2003);
+INSERT INTO MODELS (MODEL_ID, MAKE, MODEL, YEAR) VALUES (2, 'Honda', 'CR-V', 2014);
+INSERT INTO MODELS (MODEL_ID, MAKE, MODEL, YEAR) VALUES (3, 'Chevrolet', 'Volt', 2015);
+
+INSERT INTO VEHICLES (VIN, MODEL_ID, COLOR) VALUES ('1HGCM82633A', 1, 'Silver');
+INSERT INTO VEHICLES (VIN, MODEL_ID, COLOR) VALUES ('5J6RM4H79EL', 2, 'Blue');
+INSERT INTO VEHICLES (VIN, MODEL_ID, COLOR) VALUES ('1G1RA6EH1FU', 3, 'Red');
 
 INSERT INTO OWNERS (OWNER_ID, OWNER_NAME, OWNER_PHONE) VALUES (101, 'Alice', '123-456-7890');
 INSERT INTO OWNERS (OWNER_ID, OWNER_NAME, OWNER_PHONE) VALUES (102, 'Bob', '987-654-3210');
 INSERT INTO OWNERS (OWNER_ID, OWNER_NAME, OWNER_PHONE) VALUES (103, 'Claire', '555-123-4567');
 INSERT INTO OWNERS (OWNER_ID, OWNER_NAME, OWNER_PHONE) VALUES (104, 'Dave', '111-222-3333');
 
-INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, INSURANCE_COMPANY, INSURANCE_POLICY, OWNERSHIP_START, OWNERSHIP_END)
-VALUES ('1HGCM82633A', 101, 'ABC Insurance', 'Fire & Theft', '2003-06-01', '2020-01-15');  -- Alice: dueña anterior
+INSERT INTO INSURANCE_COMPANIES (COMPANY_ID, COMPANY_NAME) VALUES (1, 'ABC Insurance');
+INSERT INTO INSURANCE_COMPANIES (COMPANY_ID, COMPANY_NAME) VALUES (2, 'XYZ Insurance');
+INSERT INTO INSURANCE_COMPANIES (COMPANY_ID, COMPANY_NAME) VALUES (3, 'DEF Insurance');
+INSERT INTO INSURANCE_COMPANIES (COMPANY_ID, COMPANY_NAME) VALUES (4, 'GHI Insurance');
 
-INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, INSURANCE_COMPANY, INSURANCE_POLICY, OWNERSHIP_START, OWNERSHIP_END)
-VALUES ('1HGCM82633A', 102, 'XYZ Insurance', 'Full Cover', '2020-01-16', NULL);  -- Bob: dueño actual
+INSERT INTO POLICIES (POLICY_ID, COMPANY_ID, POLICY_TYPE) VALUES (1, 1, 'Fire & Theft');
+INSERT INTO POLICIES (POLICY_ID, COMPANY_ID, POLICY_TYPE) VALUES (2, 2, 'Full Cover');
+INSERT INTO POLICIES (POLICY_ID, COMPANY_ID, POLICY_TYPE) VALUES (3, 3, 'Collision');
+INSERT INTO POLICIES (POLICY_ID, COMPANY_ID, POLICY_TYPE) VALUES (4, 4, 'Basic Legal');
 
-INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, INSURANCE_COMPANY, INSURANCE_POLICY, OWNERSHIP_START, OWNERSHIP_END)
-VALUES ('5J6RM4H79EL', 103, 'DEF Insurance', 'Collision', '2014-08-01', NULL);  -- Claire: dueña actual
+INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, POLICY_ID, OWNERSHIP_START, OWNERSHIP_END)
+VALUES ('1HGCM82633A', 101, 1, '2003-06-01', '2020-01-15');  -- Alice: dueña anterior
 
-INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, INSURANCE_COMPANY, INSURANCE_POLICY, OWNERSHIP_START, OWNERSHIP_END)
-VALUES ('1G1RA6EH1FU', 104, 'GHI Insurance', 'Basic Legal', '2015-03-10', NULL);  -- Dave: dueño actual
+INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, POLICY_ID, OWNERSHIP_START, OWNERSHIP_END)
+VALUES ('1HGCM82633A', 102, 2, '2020-01-16', NULL);  -- Bob: dueño actual
+
+INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, POLICY_ID, OWNERSHIP_START, OWNERSHIP_END)
+VALUES ('5J6RM4H79EL', 103, 3, '2014-08-01', NULL);  -- Claire: dueña actual
+
+INSERT INTO VEHICLE_OWNERS (VIN, OWNER_ID, POLICY_ID, OWNERSHIP_START, OWNERSHIP_END)
+VALUES ('1G1RA6EH1FU', 104, 4, '2015-03-10', NULL);  -- Dave: dueño actual
 
 -- =====================================================================
 -- VERIFICACIÓN
 -- =====================================================================
 
+SELECT * FROM MODELS;
 SELECT * FROM VEHICLES;
 SELECT * FROM OWNERS;
+SELECT * FROM INSURANCE_COMPANIES;
+SELECT * FROM POLICIES;
 SELECT * FROM VEHICLE_OWNERS;
